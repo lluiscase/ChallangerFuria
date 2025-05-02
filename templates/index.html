@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Challenger Furia</title>
+{% endblock %}
+
+{% block body %}
+<section id="chat">
+    <div class="header">
+        <img src="/static/img/Furia_Esports_logo.png" alt="">
+        <h1>Challenger 1 - ChatBot</h1>
+    </div>
+
+    <div id="chatbody">
+        <div class="text messagebot">
+            <div class="messagetext"><p>{{bot}}</p></div>
+        </div>
+
+        {% for mensagem in mensagens %}
+        <div class="text messageuser">
+            <div class="messagetext"><p>{{ mensagem }}</p></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form id="mensagem-form">
+        <input type="text" id="entry" name="entry" placeholder="Digite uma mensagem..." required>
+    </form>
+</section>
+
+<script>
+import Groq from "groq-sdk";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+async function main() {
+  const completion = await groq.chat.completions
+    .create({
+      messages: [
+        {
+          role: "user",
+          content: "Explain the importance of fast language models",
+        },
+      ],
+      model: "llama-3.3-70b-versatile",
+    })
+    .then((chatCompletion) => {
+      console.log(chatCompletion.choices[0]?.message?.content || "");
+    });
+}
+
+
+    const chatbody = document.getElementById('chatbody');
+    document.getElementById('mensagem-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const entryInput = document.getElementById('entry');
+        const mensagem = entryInput.value.trim();
+
+        if (mensagem !== '') {
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ entry: mensagem })
+            })
+            .then(() => {
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'text messageuser';
+                userMessageDiv.innerHTML = `<div class="messagetext"><p>${mensagem}</p></div>`;
+                chatbody.appendChild(userMessageDiv);
+            
+            fetch('/get_response',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify({bot:mensagem})
+            })
+            .then((response => response.json )
+            .then(data=>{
+                const botMessageDiv = document.createElement('div')
+                botMessageDiv.className = 'text messagebot'
+                botMessageDiv.innerHTML = `<div class="messagetext"><p>${data.response}</p></div>`
+            }))});
+            entryInput.value = ''
+        }
+    });
+</script>
+{% endblock %}
