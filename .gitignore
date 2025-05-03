@@ -1,14 +1,5 @@
-<<<<<<< HEAD
 #Chave da API Groq
 .env
-
-=======
-<<<<<<< HEAD
-#Chave da API Groq
-.env
-
-=======
-.env
->>>>>>> 8d08b0eec58035d1d716e1fbef2d42508bbaae5f
->>>>>>> 022e9d4517d1aaa25833404ed6812e763860a8f0
+key.env
 .vscode
+test.py

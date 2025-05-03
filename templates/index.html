@@ -15,12 +15,9 @@
         <div class="text messagebot">
             <div class="messagetext"><p>{{bot}}</p></div>
         </div>
-
-        {% for mensagem in mensagens %}
         <div class="text messageuser">
             <div class="messagetext"><p>{{ mensagem }}</p></div>
         </div>
-        {% endfor %}
     </div>
 
     <form id="mensagem-form">
@@ -29,34 +26,11 @@
 </section>
 
 <script>
-import Groq from "groq-sdk";
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-async function main() {
-  const completion = await groq.chat.completions
-    .create({
-      messages: [
-        {
-          role: "user",
-          content: "Explain the importance of fast language models",
-        },
-      ],
-      model: "llama-3.3-70b-versatile",
-    })
-    .then((chatCompletion) => {
-      console.log(chatCompletion.choices[0]?.message?.content || "");
-    });
-}
-
-
     const chatbody = document.getElementById('chatbody');
     document.getElementById('mensagem-form').addEventListener('submit', function(event) {
         event.preventDefault();
-
         const entryInput = document.getElementById('entry');
         const mensagem = entryInput.value.trim();
-
         if (mensagem !== '') {
             fetch('/', {
                 method: 'POST',
@@ -70,20 +44,24 @@ async function main() {
                 userMessageDiv.className = 'text messageuser';
                 userMessageDiv.innerHTML = `<div class="messagetext"><p>${mensagem}</p></div>`;
                 chatbody.appendChild(userMessageDiv);
-            
+                })
             fetch('/get_response',{
-                method: 'POST',
+                method: "POST",
                 headers:{
-                    'Content-Type': 'application/json'
+                    'Content-Type':'application/json'
                 },
-                body:JSON.stringify({bot:mensagem})
+                body: JSON.stringify({response:mensagem})
             })
-            .then((response => response.json )
+            .then(response => response.json())
             .then(data=>{
-                const botMessageDiv = document.createElement('div')
-                botMessageDiv.className = 'text messagebot'
-                botMessageDiv.innerHTML = `<div class="messagetext"><p>${data.response}</p></div>`
-            }))});
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'text messagebot';
+                userMessageDiv.innerHTML = `<div class="messagetext"><p>${data.response}</p></div>`;
+                chatbody.appendChild(userMessageDiv);
+            })
+            .catch(error =>{
+                console.error("Erro:",error)
+            });
             entryInput.value = ''
         }
     });
