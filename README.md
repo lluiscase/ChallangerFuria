@@ -13,10 +13,10 @@ A ideia principal do projeto é utilizar do flask para mandar mensagens ao servi
 
 ##Como rodar:
 ---
-git clone https://github.com/lluiscase/ChallangerFuria
-python -m venv venv
-pip install -r requirements.txt
-Logo após isso crie uma chave no Grop no plano gratuito e coloque no arquivo .env
+1. git clone https://github.com/lluiscase/ChallangerFuria
+2. python -m venv venv
+3. pip install -r requirements.txt
+4. Logo após isso crie uma chave no Grop no plano gratuito e coloque no arquivo .env
 
 
 
